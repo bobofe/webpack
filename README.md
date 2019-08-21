@@ -67,9 +67,15 @@ package.json
 必选项
 
 - name 模块的名称，命名时不能转义字符，不能以.和_开头。
+
+> name属性主要用于当别人引入这个包是告诉人家这个包叫什么，方便别人require
+ ` require xxx from '包名'
+
 - version 模块的版本号 其格式：主版本号.福版本号.补丁版本号
       在 dependencies devDependencies 等配置项中可使用语义化版本语法。
-- main : 模块入口文件(包的里面的文件)，包的index.js中的name属性就是要安装的包的包名
+- main : 模块入口文件(包的里面的文件)，包的main属性的值index.js就是引入这个模块的入口文件
+                         
+ > main属性主要用于这个项目作为一个包被别人引用的时候告诉别人哪个是入口文件 
  
  ![](img/image-20190425140645525.png) 
 
@@ -631,3 +637,54 @@ webpack启动在服务端，用了服务器的端口，不存在跨域
 webpack-dev-middleware：webpack开发服务的中间件，可以在服务端启动webpack
 
 17.resolve属性的配置
+前置知识点
+
+以element为例，在node_modules中的结构如下：
+
+![](img/image-20190821090022918.png)
+
+Node.js 在调用某个包时，会首先检查包中 package.json 文件的 main 字段，将其作为
+包的接口模块，如果 package.json 或 main 字段不存在，会尝试寻找 index.js 或 index.node 作
+为包的接口。
+
+![](img/image-20190821094001151.png)
+
+element-ui的接口是'lib/element-ui.common.js'是一个js文件
+
+同时里面还有一个字段
+
+![](img/image-20190821094211971.png)
+
+所以element-ui默认只会引入js，不会引入css，如果想要引入css，还需要手动引入style字段指定的css
+
+    import 'element-ui/lib/theme-chalk/index.css'
+
+模块管理modules
+
+webpack使用node开发的，在commonJS规范中，在引入第三方包时，先找当前目录下的node_modules，如果没有就向上一级一级的找，可以指定modules属性来限制只在当前目录下找
+
+别名alias
+
+但是这个引入css的名称太长了，可以通过resolve的alias字段来指定一个别名
+
+主入口顺序mainfields
+
+对于一些UI框架，有时候只使用其中css部分，不需要引入js，所以入口文件希望是css，而不是js，这时就可以用mainfields字段来指定谁作为主入口文件
+
+省略扩展名extensions
+
+在引入文件时希望省掉扩展名
+
+    modules.export={
+      resolve:{  // 解析第三方包
+    		modules:[path.resolve('node_modules')], //只在当前目录下的node_modules中查找，不再往上找
+        alias:{
+          bootstrap_css:'element-ui/lib/theme-chalk/index.css',  // 直接引入别名就可以了
+        }，
+        mainfields:[style,main], // 如果style有，就以style作为主入口，没有就去main找，一个一个像后找，
+                                // 主入口文件只能有一个
+        extensions:[.js,.css,.vue] // 一个一个往后找，直到找到符合的
+    	},
+    }
+
+
