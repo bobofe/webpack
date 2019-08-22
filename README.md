@@ -1,10 +1,12 @@
-1、webpack？
+[TOC]
+
+## 1、webpack？
 
 模块打包机
 
 ![](img/image-20190630231039593.png)
 
-2、学习的内容
+## 2、学习的内容
 
 ![](img/image-20190630231058575.png)
 
@@ -12,7 +14,7 @@
 
 代码转换---loader(文件预处理：将不同的语言转为js)
 
-3、下载安装
+## 3、下载安装
 
 既可以安装本地的webpack，也可以安装全局的webpack，安装全局的webpack可能会导致版本的不一致，
 
@@ -24,7 +26,7 @@
     # 确定已经有 package.json，没有就通过 npm init 创建
     # 安装 webpack 依赖
     $ npm install webpack --save-dev(webpack3.0)
-
+    
     # 进入项目目录
     # 确定已经有 package.json，没有就通过 npm init 创建
     # 安装 webpack 依赖；安装webpack-cli是为了执行webpack的打包工作
@@ -38,17 +40,19 @@
 
 package.json ———— npm init
 
-    {
-      "name": "webpack-learn",
-      "version": "1.0.0",
-      "description": "",
-      "main": "index.js",
-      "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-      },
-      "author": "",
-      "license": "ISC"
-    }
+```json
+{
+  "name": "webpack-learn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+```
 
 npm init：初始化配置文件
 
@@ -76,12 +80,13 @@ package.json
 - main : 模块入口文件(包的里面的文件)，包的main属性的值index.js就是引入这个模块的入口文件
                          
  > main属性主要用于这个项目作为一个包被别人引用的时候告诉别人哪个是入口文件 
- 
+
  ![](img/image-20190425140645525.png) 
 
 可选项
 
 - keywords ：关键字，数组类型
+  
   - author ： 发起者信息
 - engines ： node 版本
 - repository ： 源码托管地址
@@ -126,7 +131,7 @@ webpack打包项目
 
 打包后的结果：在根路径下生成一个dist/bundle.js
 
-4、webpack基础配置-生成一个dist+dist/main.js
+## 4、webpack基础配置-生成一个dist+dist/main.js
 
 (1)0配置
 
@@ -178,7 +183,7 @@ npx webpack --config webpack.config.my.js
 
 解决：在package.json中配置脚本
 
-```$xslt
+```json
 "scripts": {
     "build": "webpack --config webpack.config.my.js",
  },
@@ -189,10 +194,12 @@ npx webpack --config webpack.config.my.js
 
 package.json
 
+```json
 "scripts": {
     "build": "webpack",
     "dev": "webpack-dev-server"
 },
+```
 
 npm run build :打包
 
@@ -206,7 +213,7 @@ npm run build --  --config webpack.config.my.js
 
 注意：build后的 — 不能省，不加build后面的两个 - -，不会把后面的识别为参数
 
-5、配置开发服务器-生成一个dist/index.html
+## 5、配置开发服务器-生成一个dist/index.html
 
 在本地，通常情况是通过单击html来访问一个file路径下的文件，如果希望以localhost或ip的方式来访问，需要启动一个本地的服务器
 
@@ -225,7 +232,7 @@ npm run build --  --config webpack.config.my.js
 在package.json 中配置脚本
 
     "dev": "webpack-dev-server"
-
+    
     npx webpack-dev-server -D 或 npm run dev
 
 它会生成一个默认的访问地址：localhost:8080，并且以当前根目录作为静态目录
@@ -259,7 +266,7 @@ let htmlWebpackPlugin = require('html-webpack-plugin')
 
 template: 模版文件的路径
 
-6、样式处理loader 
+## 6、样式处理loader 
 
 - style-loader：将将模块的导出作为样式添加到 DOM 中(将css插入到dom中)
 - css-loader：解析css中通过import引入的css，并将多个css文件进行合并
@@ -344,52 +351,54 @@ module.exports = {
 ①安装插件
 
     npm install optimize-css-assets-webpack-plugin -D
-
+    
     npm i uglifyjs-webpack-plugin -D 
 
 ②配置webpack.config.js
 
-    const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-    const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-    const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-    module.exports = {
-      // webpack4:优化
-      optimization: {
-        // 压缩
-        minimizer: [
-          // 压缩js
-          new UglifyJsPlugin({
-            // 是否缓存
-            cache: true，
-            // 是否并发打包
-            parallel: true，
-            // 源码映射，将es6解析为es5后，需要源码映射来进行调试
-            sourceMap: true
-          }), 
-          // 压缩css
-          new OptimizeCSSAssetsPlugin({})
-        ],
+```javascript
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+module.exports = {
+  // webpack4:优化
+  optimization: {
+    // 压缩
+    minimizer: [
+      // 压缩js
+      new UglifyJsPlugin({
+        // 是否缓存
+        cache: true，
+        // 是否并发打包
+        parallel: true，
+        // 源码映射，将es6解析为es5后，需要源码映射来进行调试
+        sourceMap: true
+      }), 
+      // 压缩css
+      new OptimizeCSSAssetsPlugin({})
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'dist/index.html
+    })
+    new MiniCssExtractPlugin({
+      filename: 'main.css',
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
-      plugins: [
-        new HtmlWebpackPlugin({
-          filename: 'index.html',
-          template: 'dist/index.html
-        })
-        new MiniCssExtractPlugin({
-          filename: 'main.css',
-        }),
-      ],
-      module: {
-        rules: [
-          {
-            test: /\.css$/,
-            use: [MiniCssExtractPlugin.loader, 'css-loader'],
-          },
-        ],
-      },
-    };
+    ],
+  },
+};
+```
 
-7、JS模块处理(ES6→ES5)
+## 7、JS模块处理(ES6→ES5)
 
 babel：转化js
 
@@ -425,7 +434,7 @@ plugins：小插件
 
 9、全部变量引入
 
-10、图片处理
+## 10、图片处理
 
 创建图片的三种方式：
 
@@ -467,7 +476,7 @@ file-load：默认会在内部生成一张图片，同时将图片放到build目
 
 ![](img/image-20190703075120689.png)
 
-11、dist下打包文件分类
+## 11、dist下打包文件分类
 
 图片分类
 
@@ -485,7 +494,7 @@ css分类
 
 ![](img/image-20190703080457486.png)
 
-12.打包多页应用(多个入口文件)
+## 12.打包多页应用(多个入口文件)
 
 打包js
 
@@ -501,7 +510,7 @@ css分类
 
 ![](img/image-20190703081847799.png)
 
-13.sourse-map资源映射
+## 13.sourse-map资源映射
 
 在解析js的过程中，可能会把高级语法解析为低级语法，这样就需要一个从源码到打包文件的一一对应的映射关系，这样在error的时候可进行调试
 
@@ -509,11 +518,11 @@ css分类
 
 ![](img/image-20190703084343679.png)
 
-14.实时自动打包watch
+## 14.实时自动打包watch
 
 ![](img/image-20190703084856913.png)
 
-15.webpack小插件应用
+## 15.webpack小插件应用
 
 - cleanWebpackPlugin  清除
 - copyWebpackPlugin  复制
@@ -567,7 +576,7 @@ plugins: [
     new webpack.BannerPlugin('make 2019 by xxx')
 ]
 ```
-16.webpack跨域问题
+## 16.webpack跨域问题
 
 第一种：代理proxy，有服务端
 
@@ -636,7 +645,8 @@ webpack启动在服务端，用了服务器的端口，不存在跨域
 
 webpack-dev-middleware：webpack开发服务的中间件，可以在服务端启动webpack
 
-17.resolve属性的配置
+## 17.resolve属性的配置
+
 前置知识点
 
 以element为例，在node_modules中的结构如下：
@@ -675,16 +685,66 @@ webpack使用node开发的，在commonJS规范中，在引入第三方包时，�
 
 在引入文件时希望省掉扩展名
 
-    modules.export={
-      resolve:{  // 解析第三方包
-    		modules:[path.resolve('node_modules')], //只在当前目录下的node_modules中查找，不再往上找
-        alias:{
-          bootstrap_css:'element-ui/lib/theme-chalk/index.css',  // 直接引入别名就可以了
-        }，
-        mainfields:[style,main], // 如果style有，就以style作为主入口，没有就去main找，一个一个像后找，
-                                // 主入口文件只能有一个
-        extensions:[.js,.css,.vue] // 一个一个往后找，直到找到符合的
-    	},
-    }
+```javascript
+modules.export={
+  resolve:{  // 解析第三方包
+		modules:[path.resolve('node_modules')], //只在当前目录下的node_modules中查找，不再往上找
+    alias:{
+      bootstrap_css:'element-ui/lib/theme-chalk/index.css',  // 直接引入别名就可以了
+    }，
+    mainfields:[style,main], // 如果style有，就以style作为主入口，没有就去main找，一个一个像后找，
+                            // 主入口文件只能有一个
+    extensions:[.js,.css,.vue] // 一个一个往后找，直到找到符合的
+	},
+}
+```
 
+## 18.环境变量
 
+根据环境的不同，赋值不同的变量，例子：
+
+![image-20190822094521685](../../../Users/lsb/Library/Application Support/typora-user-images/image-20190822094521685.png)
+
+### 定义环境变量
+
+webpack的内置插件—webpack.DefinePlugin()
+
+![image-20190822094801320](img/image-20190822094801320.png)
+
+改进：
+
+![image-20190822094935864](img/image-20190822094935864.png)
+
+### 区分生成环境和开发环境
+
+定义不同的文件名来区分生成环境和开发环境
+
++ webpack.base.js
+
++ webpack.prod.js
+
++ webpack.dev.js
+
+在生成环境和开发环境中，都需要引入webpack.base.js，并且进行合并，使用**插件webpack-merge**
+
+```
+npm install webpack-merge
+```
+
+![image-20190822095352536](img/image-20190822095759758.png)
+
+生成环境中可以配置一些优化项
+
+![image-20190822100026259](img/image-20190822100026259.png)
+
+开发环境中可以配置一些跟开发有关的项，比如：开发服务器，源码映射….
+
+## 19.优化项
+
+### no-parse
+
+webpack对依赖项进行打包时，会分析这个包的依赖，对它的依赖也进行打包，层层推进
+
+但是对一些没有依赖的包，没有必要再解析它的依赖，这时可以通过no-mergin进行设置
+
+![image-20190822100618493](img/image-20190822100618493.png)
